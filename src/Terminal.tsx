@@ -1,12 +1,12 @@
-import { Box, Button, CircularProgress, Fade, LinearProgress, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Box, Button, LinearProgress, List, ListItem, ListItemText, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
+
 
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
         marginTop: theme.spacing(2)
     },
     button: {
@@ -20,94 +20,99 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+function renderRow(message: number, index: number, statusbar: number) {
+    const messages = ["",
+        "for (k = 1; k<=n; k++)\n{for (c = 1; c<=space; c++)\ncout<< space--;\n for (c = 1; c<= 2*k-1; c++)\ncout<<*;\ncout<<\n;}",
+        "if(n == 0){return 1;}",
+        "else{return n * factorial(n - 1);}",
+        "fstream inFile(c:/temp/soccer.txt, ios::in);",
+        "while (!inFile.eof())",
+        "vector<Player>players;",
+        "getline(inFile, name); players[i].setName(name); getline(inFile, team);",
+        "players.push_back(p);",
+        "Error illegal argument exception",
+    ]
 
-export const Terminal = () => {
-    const classes = useStyles();
-    const [query, setQuery] = React.useState('idle');
-    const [Password, setPassword] = React.useState("");
-    const [visible, setvisible] = React.useState(false);
-    const timerRef = React.useRef(0);
-    const messages = ["hier könnte dein Text für dein Geochache stehen!", "Hier köntne noch viel mehr text stehen, wenn du das willst"];
+    switch (index) {
+        case (statusbar / 10):
+            return (
+                <ListItem key={index} >
+                    <ListItemText primary={messages[index]} />
+                </ListItem>
+            )
+    }
 
-    React.useEffect(
-        () => () => {
-            clearTimeout(timerRef.current);
-        },
-        [],
-    );
-
-    const Loader = (props: any) => {
-        const { messages } = props;
-        // Default to the first message passed
-        const [messageIndex, setMessageIndex] = React.useState(0);
+}
 
 
-        React.useEffect(() => {
-            // Move on to the next message every `n` milliseconds
-            let timeout: any;
-            if (messageIndex < messages.length - 1) {
-                timeout = setTimeout(() => setMessageIndex(messageIndex + 1), 3000);
-            }
+function LinearProgressWithLabel(props: any) {
+    const messages = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    const [hach, setHach] = React.useState(false);
+    const classes = useStyles()
 
-            return () => {
-                clearTimeout(timeout);
-            };
-        }, [messages, messageIndex]);
-
-        return <div>{messages[messageIndex]}</div>;
+    const handleButtonClick = () => {
+        setHach(true)
     }
 
 
-    const handleClickQuery = () => {
-        if (Password !== "guido") {
-            return
-        }
-
-        clearTimeout(timerRef.current);
-
-        if (query !== 'idle') {
-            setQuery('idle');
-            return;
-        }
-
-        setQuery('progress');
-        setvisible(true)
-        timerRef.current = window.setTimeout(() => {
-            setQuery('success');
-            setvisible(false)
-        }, 10000);
-
-    };
-
     return (
-        <div className={classes.root}>
-            <div className={classes.placeholder}>
-                {query === 'success' ? (
-                    <Typography>Success!</Typography>
-                ) : (
-                        <Fade
-                            in={query === 'progress'}
-                            style={{
-                                transitionDelay: query === 'progress' ? '800ms' : '0ms',
-                            }}
-                            unmountOnExit
-                        >
-                            <CircularProgress />
-                        </Fade>
-                    )}
+        <div >
+            <Box display="flex" alignItems="center">
+                <Box width="100%" mr={1}>
+                    <LinearProgress variant="determinate" {...props} />
+                </Box>
+                <Box minWidth={35} >
+                    <Typography variant="body2" color="textSecondary">{`${Math.round(
+                        props.value) !== 100 ? Math.round(
+                            props.value) : 99
+                        }%`}</Typography>
+                </Box>
+            </Box>
+            <List>
+                {messages.map((mes, idx) => renderRow(mes, idx, Math.round(props.value)))}
+
+            </List>
+            <div className={classes.root}>
+                <div>
+                    {props.value === 100 && <Typography>Error illegal argument exception</Typography>}
+                </div>
+                <div>
+                    {props.value === 100 && <Button onClick={handleButtonClick}>Close</Button>}
+                </div>
+                <div>
+                    {hach && <React.Fragment><Typography>You have been hached!</Typography> <Typography>Rätsel???????</Typography></React.Fragment>}
+                </div>
             </div>
-            <TextField
-                className={classes.margin}
-                label="Password"
-                type="password"
-                autoComplete="current-password"
-                variant="outlined"
-                onChange={((e) => setPassword(e.target.value))}
-            />
-            <Button onClick={handleClickQuery} className={classes.button}>
-                {query !== 'idle' ? 'Reset' : 'Simulate a load'}
-            </Button>
-            {visible && <Loader messages={messages} />}
         </div>
     );
+}
+
+
+export const Terminal = () => {
+    let [loading, setLoading] = React.useState(0);
+    const [progress, setProgress] = React.useState(0);
+
+
+    const handleButtonClick = () => {
+        let intervall = setInterval(() => {
+            console.log(progress)
+            if (loading <= 9) {
+                setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
+                loading += 1
+            }
+            else {
+                clearInterval(intervall)
+                setLoading(0)
+            }
+        }, 800);
+
+    }
+
+
+    return (
+        < div  >
+            <LinearProgressWithLabel value={progress} />
+            <Button onClick={handleButtonClick}>Solve</Button>
+        </div >
+    )
 }
