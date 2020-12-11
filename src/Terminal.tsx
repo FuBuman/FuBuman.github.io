@@ -7,17 +7,13 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
-        marginTop: theme.spacing(2)
+        marginTop: theme.spacing(2),
+        alignItems: "center"
+
     },
-    button: {
-        margin: theme.spacing(2),
+    background: {
+        backgroundColor: "black"
     },
-    placeholder: {
-        height: 40,
-    },
-    margin: {
-        marginTop: theme.spacing(2)
-    }
 }));
 
 function renderRow(message: number, index: number, statusbar: number) {
@@ -37,7 +33,7 @@ function renderRow(message: number, index: number, statusbar: number) {
         case (statusbar / 10):
             return (
                 <ListItem key={index} >
-                    <ListItemText primary={messages[index]} />
+                    <ListItemText disableTypography primary={<Typography style={{ color: '#FFFFFF' }}>{messages[index]}</Typography>} />
                 </ListItem>
             )
     }
@@ -50,19 +46,20 @@ function LinearProgressWithLabel(props: any) {
     const [hach, setHach] = React.useState(false);
     const classes = useStyles()
 
+
     const handleButtonClick = () => {
         setHach(true)
     }
 
 
     return (
-        <div >
-            <Box display="flex" alignItems="center">
-                <Box width="100%" mr={1}>
-                    <LinearProgress variant="determinate" {...props} />
+        <div>
+            <Box display="flex" alignItems="center" >
+                <Box width="1000px" mr={1}>
+                    <LinearProgress variant="determinate" {...props} color="secondary" />
                 </Box>
                 <Box minWidth={35} >
-                    <Typography variant="body2" color="textSecondary">{`${Math.round(
+                    <Typography variant="body2" color="secondary">{`${Math.round(
                         props.value) !== 100 ? Math.round(
                             props.value) : 99
                         }%`}</Typography>
@@ -74,13 +71,13 @@ function LinearProgressWithLabel(props: any) {
             </List>
             <div className={classes.root}>
                 <div>
-                    {props.value === 100 && <Typography>Error illegal argument exception</Typography>}
+                    {props.value === 100 && <Typography color="secondary">Error illegal argument exception</Typography>}
                 </div>
                 <div>
-                    {props.value === 100 && <Button onClick={handleButtonClick}>Close</Button>}
+                    {props.value === 100 && <Button onClick={handleButtonClick} color="secondary">Close</Button>}
                 </div>
                 <div>
-                    {hach && <React.Fragment><Typography>You have been hached!</Typography> <Typography>Rätsel???????</Typography></React.Fragment>}
+                    {hach && <React.Fragment><Typography color="secondary">You have been hached!</Typography> <Typography color="secondary">{">>+1PM-ADJDWDPD<<"}</Typography></React.Fragment>}
                 </div>
             </div>
         </div>
@@ -91,11 +88,10 @@ function LinearProgressWithLabel(props: any) {
 export const Terminal = () => {
     let [loading, setLoading] = React.useState(0);
     const [progress, setProgress] = React.useState(0);
-
+    const classes = useStyles()
 
     const handleButtonClick = () => {
         let intervall = setInterval(() => {
-            console.log(progress)
             if (loading <= 9) {
                 setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
                 loading += 1
@@ -110,9 +106,9 @@ export const Terminal = () => {
 
 
     return (
-        < div  >
+        < div className={classes.root}>
             <LinearProgressWithLabel value={progress} />
-            <Button onClick={handleButtonClick}>Solve</Button>
+            <Button onClick={handleButtonClick} color="secondary">Solve</Button>
         </div >
     )
 }
